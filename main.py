@@ -13,17 +13,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+print("🚀 APP STARTING...")
+
 BASE_DIR = os.path.dirname(__file__)
 file_path = os.path.join(BASE_DIR, "model_supplier.csv")
 
-model_df = pd.read_csv(file_path)
+print("📂 PATH:", file_path)
+
+try:
+    model_df = pd.read_csv(file_path)
+    print("✅ CSV LOADED:", model_df.shape)
+except Exception as e:
+    print("❌ ERROR LOADING CSV:", e)
+    model_df = pd.DataFrame()  # biar app tetap jalan
 
 @app.get("/recommend")
 def recommend(barang: str):
+    if model_df.empty:
+        return {"error": "Data tidak tersedia"}
+
     hasil = model_df[
         model_df['description_barang']
         .str.contains(barang, case=False, na=False)
     ]
-    hasil = hasil.sort_values('final_score', ascending=False)
-    return hasil.to_dict(orient='records')
 
+    hasil = hasil.sort_values('final_score', ascending=False).head(15)
+
+    return hasil.to_dict(orient='records')
