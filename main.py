@@ -40,3 +40,10 @@ def recommend(barang: str):
     hasil = hasil.sort_values('final_score', ascending=False).head(15)
 
     return hasil.to_dict(orient='records')
+
+if __name__ == "__main__":
+    import uvicorn
+    import os
+
+    port = int(os.environ.get("PORT", 9000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
