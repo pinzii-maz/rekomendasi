@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
+import os
 
 app = FastAPI()
 
@@ -12,7 +13,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model_df = pd.read_csv("model_supplier.csv")
+BASE_DIR = os.path.dirname(__file__)
+file_path = os.path.join(BASE_DIR, "model_supplier.csv")
+
+model_df = pd.read_csv(file_path)
 
 @app.get("/recommend")
 def recommend(barang: str):
